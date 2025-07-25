@@ -1,0 +1,14 @@
+<Context>
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    <Resource name="jdbc/lcn-kr-db"
+              auth="Container"
+              type="javax.sql.DataSource"
+              maxTotal="100"
+              maxIdle="30"
+              maxWaitMillis="10000"
+              username="admin"
+              password="powerlcn"
+              driverClassName="org.mariadb.jdbc.Driver"
+              url="jdbc:mariadb://lcn-kr-db.c9g48swe6aab.ap-northeast-2.rds.amazonaws.com:3306/mariadb"
+</Context>
+

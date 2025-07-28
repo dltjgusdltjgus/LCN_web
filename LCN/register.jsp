@@ -16,7 +16,9 @@
             <div class="row justify-content-md-center h-100">
                 <div class="card-wrapper">
                     <div class="brand">
-                        <img src="img/logo.png" alt="bootstrap 4 login page">
+			<a href="<%= request.getContextPath() %>IndexPage">
+				<img src="<%= request.getContextPath() %>/img/logo.png" alt="logo">
+			</a>
                     </div>
                     <div class="card fat">
                         <div class="card-body">
@@ -64,16 +66,16 @@
                                                 conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
 
                                                 // ★★★ SQL 쿼리 수정: 'users' 테이블에 새로운 컬럼들을 추가해야 합니다! ★★★
-                                                // 테이블 구조: id, user_id, PW, name, email, mobile, birth_year
-                                                // user_id는 HTML 폼의 name="userID"에서 가져옵니다.
+                                                // 테이블 구조: id, , PW, name, email, mobile, birth_year
+                                                // 는 HTML 폼의 name="userID"에서 가져옵니다.
                                                 // email은 HTML 폼의 name="email"에서 가져옵니다.
                                                 // PW는 HTML 폼의 name="password"에서 가져옵니다.
                                                 // name은 HTML 폼의 name="name"에서 가져옵니다.
                                                 // mobile은 HTML 폼의 name="mobile"에서 가져옵니다.
                                                 // birthYear는 HTML 폼의 name="birthYear"에서 가져옵니다.
 
-                                                // user_id (UNIQUE) 중복 확인
-                                                String checkSql = "SELECT COUNT(*) FROM users WHERE user_id = ?";
+                                                //  (UNIQUE) 중복 확인
+                                                String checkSql = "SELECT COUNT(*) FROM users WHERE username = ?";
                                                 pstmt = conn.prepareStatement(checkSql);
                                                 pstmt.setString(1, userID);
                                                 ResultSet rs = pstmt.executeQuery();
@@ -85,14 +87,14 @@
 
                                                     // 사용자 등록 쿼리
                                                     // 테이블에 name, email, mobile, birth_year 컬럼이 추가되어야 합니다.
-                                                    String insertSql = "INSERT INTO users (user_id, PW, name, email, mobile, birth_year) VALUES (?, ?, ?, ?, ?, ?)";
+                                                    String insertSql = "INSERT INTO users (name, username, email, password, mobile_number, birth_year) VALUES (?, ?, ?, ?, ?, ?)";
                                                     pstmt = conn.prepareStatement(insertSql);
-                                                    pstmt.setString(1, userID);
-                                                    pstmt.setString(2, password); // ★★★ 실제 환경에서는 비밀번호를 해싱하여 저장해야 합니다! ★★★
-                                                    pstmt.setString(3, name);
-                                                    pstmt.setString(4, email);
-                                                    pstmt.setString(5, mobile);
-                                                    pstmt.setInt(6, birthYear);
+                                                    pstmt.setString(1, name); // 1번째 파라미터: name
+                                                    pstmt.setString(2, userID); // 2번째 파라미터: HTML 폼의 userID -> DB username
+                                                    pstmt.setString(3, email); // 3번째 파라미터: email
+                                                    pstmt.setString(4, password); // 4번째 파라미터: password (★★★ 실제 환경에서는 비밀번호를 해싱하여 저장해야 합니다! ★★★)
+                                                    pstmt.setString(5, mobile); // 5번째 파라미터: mobile -> DB mobile_number
+                                                    pstmt.setInt(6, birthYear); // 6번째 파라미터: birthYear -> DB birth_year
 
                                                     int rowsAffected = pstmt.executeUpdate();
 
@@ -106,7 +108,7 @@
                                                     }
                                                 }
                                             } catch (SQLException e) {
-                                                // SQLSTATE 23000은 주로 UNIQUE 제약 조건 위반 (예: user_id 중복)
+                                                // SQLSTATE 23000은 주로 UNIQUE 제약 조건 위반 (예:  중복)
                                                 if (e.getSQLState().startsWith("23")) {
                                                     message = "<div class='alert alert-danger'>회원가입 실패: 이미 존재하는 사용자 ID 또는 이메일입니다.</div>";
                                                 } else {
@@ -216,6 +218,6 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="js/my-login.js"></script>
+    <!--    <script src="js/my-login.js"></script> -->
 </body>
 </html>

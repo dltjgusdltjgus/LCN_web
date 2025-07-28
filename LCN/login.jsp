@@ -7,9 +7,9 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<meta name="author" content="Kodinger">
-	<title>My Login Page</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	<link rel="stylesheet" type="text/css" href="css/my-login.css">
+	<title>My Login Page - Debug</title> <%-- 디버깅 중임을 명시 --%>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" xintegrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/css/my-login.css">
 </head>
 
 <body class="my-login-page">
@@ -18,16 +18,20 @@
 			<div class="row justify-content-md-center h-100">
 				<div class="card-wrapper">
 					<div class="brand">
-						<img src="img/logo.png" alt="logo">
+						<%-- 로고 이미지를 클릭하면 메인 페이지(index.jsp)로 이동하도록 수정 --%>
+						<a href="<%= request.getContextPath() %>/index.jsp">
+							<img src="<%= request.getContextPath() %>/img/logo.png" alt="logo">
+						</a>
 					</div>
 					<div class="card fat">
 						<div class="card-body">
-							<h4 class="card-title">Login</h4>
+							<h4 class="card-title">Login Debug</h4>
 							<%
-								// 폼이 제출되었는지 확인
+								String method = request.getMethod();
 								String email = request.getParameter("email"); // HTML 폼의 'email' 필드
 								String password = request.getParameter("password"); // HTML 폼의 'password' 필드
 								String message = "";
+
 
 								// 폼이 POST 방식으로 제출되었고 (email 파라미터가 존재하고 비어있지 않다면)
 								if (request.getMethod().equalsIgnoreCase("POST") && email != null && !email.isEmpty() && password != null && !password.isEmpty()) {
@@ -35,23 +39,18 @@
 									PreparedStatement pstmt = null;
 									ResultSet rs = null;
 
-									// ★★★ MariaDB 연결 정보 (제공된 RDS 엔드포인트와 사용자 정보를 사용) ★★★
-									// [데이터베이스_이름] 부분은 실제 데이터베이스 이름으로 변경해야 합니다.
+									// MariaDB 연결 정보 (제공된 RDS 엔드포인트와 사용자 정보를 사용)
 									String dbUrl = "jdbc:mariadb://lcn-kr-db.c9g48swe6aab.ap-northeast-2.rds.amazonaws.com:3306/LCN";
 									String dbUser = "admin"; // 제공된 ID
 									String dbPass = "powerlcn"; // 제공된 PW
 
 									try {
-										// JDBC 드라이버 로드 (Tomcat lib에 있으므로 생략 가능하지만 명시적으로 적는 경우도 있음)
-										// Class.forName("org.mariadb.jdbc.Driver");
-
 										// 데이터베이스 연결
 										conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
 
 										// SQL 쿼리 준비 (보안을 위해 PreparedStatement 사용)
-										// 이미지에서 제공된 'ID'와 'PW' 컬럼 이름을 사용합니다.
-										// HTML 폼의 'email'은 DB의 'ID' 컬럼과, 'password'는 DB의 'PW' 컬럼과 매핑된다고 가정합니다.
-										String sql = "SELECT * FROM users WHERE user_id = ? AND PW = ?";
+										// users 테이블 스키마에 맞춰 'email'과 'password' 컬럼을 사용합니다.
+										String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
 										pstmt = conn.prepareStatement(sql);
 										pstmt.setString(1, email);
 										pstmt.setString(2, password); // ★★★ 실제 환경에서는 비밀번호를 해싱하여 비교해야 합니다! ★★★
@@ -61,8 +60,9 @@
 
 										if (rs.next()) {
 											message = "<div class='alert alert-success'>로그인 성공! 환영합니다, " + email + "!</div>";
-											// 로그인 성공 시 리다이렉션 또는 세션 처리
-											// response.sendRedirect("index.jsp"); // 예시: 로그인 후 메인 페이지로 이동
+											// 로그인 성공 시 메인 페이지로 리다이렉션
+											response.sendRedirect("index.jsp");
+											return; // 리다이렉션 후 추가 코드 실행 방지
 										} else {
 											message = "<div class='alert alert-danger'>로그인 실패: 이메일 또는 비밀번호가 올바르지 않습니다.</div>";
 										}
@@ -81,13 +81,13 @@
 										}
 									}
 								} else if (request.getMethod().equalsIgnoreCase("POST")) {
-									// 폼이 제출되었으나 필드가 비어있는 경우
+									// 폼이 제출되었으나 필수 필드가 비어있는 경우
 									message = "<div class='alert alert-warning'>이메일과 비밀번호를 모두 입력해주세요.</div>";
 								}
 							%>
 							<%= message %> <%-- 메시지 출력 --%>
 
-							<form method="POST" action="login.jsp" class="my-login-validation" novalidate=""> <%-- 폼 제출 액션을 login.jsp 자신으로 설정 --%>
+							<form method="POST" action="<%= request.getContextPath() %>/login" class="my-login-validation" novalidate=""> <%-- 폼 제출 액션을 /login으로 설정 --%>
 								<div class="form-group">
 									<label for="email">E-Mail Address</label>
 									<input id="email" type="email" class="form-control" name="email" value="<%= (email != null ? email : "") %>" required autofocus>
@@ -121,7 +121,7 @@
 									</button>
 								</div>
 								<div class="mt-4 text-center">
-									Don't have an account? <a href="register.jsp">Create One</a>
+									Don't have an account? <a href="<%= request.getContextPath() %>/register">Create One</a>
 								</div>
 							</form>
 						</div>
@@ -134,10 +134,10 @@
 		</div>
 	</section>
 
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-	<script src="js/my-login.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" xintegrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" xintegrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" xintegrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<!-- <script src="<%= request.getContextPath() %>/js/my-login.js"></script> -->
 </body>
 </html>
 

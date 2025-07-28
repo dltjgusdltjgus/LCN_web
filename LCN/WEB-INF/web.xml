@@ -5,8 +5,7 @@
                              http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
-    <!-- MariaDB DataSource 설정 (현재는 사용하지 않으므로 주석 처리하거나 제거) -->
-    <!-- 이 부분을 사용하려면 Tomcat conf/context.xml 설정과 login.jsp 코드 수정이 필요합니다. -->
+    <!-- MariaDB DataSource 설정 (선택 사항: 필요 없으면 제거) -->
     <!--
     <resource-ref>
         <description>MariaDB DataSource</description>
@@ -16,27 +15,71 @@
     </resource-ref>
     -->
 
-    <!-- login.jsp 파일을 루트 URL에 매핑 -->
+    <!-- index.jsp를 루트 URL에 매핑하여 메인 페이지로 설정 -->
+    <!-- 이 방식은 welcome-file-list보다 우선합니다. -->
+    <servlet>
+        <servlet-name>IndexPage</servlet-name>
+        <jsp-file>/index.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>IndexPage</servlet-name>
+        <url-pattern>/</url-pattern> <!-- 루트 URL로 매핑 -->
+    </servlet-mapping>
+
+    <!-- login.jsp 서블릿 정의 및 /login 경로로 매핑 -->
     <servlet>
         <servlet-name>Login</servlet-name>
         <jsp-file>/login.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
-        <url-pattern>/</url-pattern> <!-- 루트 URL로 매핑 -->
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
 
-    <!-- 정적 파일 매핑은 Tomcat이 자동으로 처리하므로 불필요합니다. 제거하는 것을 권장합니다. -->
-    <!--
+    <!-- register.jsp 서블릿 정의 및 /register 경로로 매핑 -->
+    <servlet>
+        <servlet-name>Register</servlet-name>
+        <jsp-file>/register.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Register</servlet-name>
+        <url-pattern>/register</url-pattern>
+    </servlet-mapping>
+
+
+    <!-- **** 중요: 정적 파일 매핑 추가 **** -->
+    <!-- Tomcat의 DefaultServlet을 사용하여 CSS, JS, 이미지, 파비콘 등 정적 파일을 서빙합니다. -->
+    <!-- 이 매핑이 없으면 CSS, JS, 이미지가 로드되지 않습니다. -->
     <servlet-mapping>
         <servlet-name>default</servlet-name>
-        <url-pattern>/style.css</url-pattern>
+        <url-pattern>/css/*</url-pattern>
     </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/js/*</url-pattern>
     </servlet-mapping>
-    -->
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/img/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/dist/js/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/assets/*</url-pattern> <!-- Favicon 경로를 위해 추가 -->
+    </servlet-mapping>
+    <!-- 필요한 경우 다른 정적 리소스 경로도 추가합니다. -->
+
+
+    <!-- welcome-file-list는 위 / 매핑이 우선하므로 여기서는 필수는 아니지만,
+         명시적으로 두는 것이 좋습니다. -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.htm</welcome-file>
+    </welcome-file-list>
 
 </web-app>
+

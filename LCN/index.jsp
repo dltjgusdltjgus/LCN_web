@@ -1,3 +1,4 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -7,11 +8,13 @@
         <meta name="author" content="" />
         <title>Shop Homepage - Start Bootstrap Template</title>
         <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- 절대 경로로 수정: assets/favicon.ico -->
+        <link rel="icon" type="image/x-icon" href="<%= request.getContextPath() %>/assets/favicon.ico" />
         <!-- Bootstrap icons-->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/styles.css" rel="stylesheet" />
+        <!-- 절대 경로로 수정: css/styles.css -->
+        <link href="<%= request.getContextPath() %>/css/styles.css" rel="stylesheet" />
     </head>
     <body>
         <!-- Navigation-->
@@ -41,7 +44,8 @@
                     </form>
                 </div>
                 <a class="navbar-brand" href="#!">LCN</a>
-                <a class="login" href="login.jsp">로그인하러가기</a>
+                <!-- login.jsp 링크 수정 -->
+                <a class="login" href="<%= request.getContextPath() %>/login.jsp">로그인하러가기</a>
             </div>
         </nav>
         <!-- Header-->
@@ -141,7 +145,6 @@
                         </div>
                     </div>
 
-                    
                 </div>
             </div>
         </section>
@@ -152,6 +155,8 @@
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
+        <!-- 절대 경로로 수정: js/scripts.js -->
+        <script src="<%= request.getContextPath() %>/js/scripts.js"></script>
     </body>
 </html>
+

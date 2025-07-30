@@ -57,7 +57,7 @@ jobs:
           repository: dltjgusdltjgus/LCN_manifests
           ref: main
           token: ${{ secrets.ACTION_TOKEN }}
-          path: manifests-seoul
+          path: LCN_manifests
 
       #        10. 서울 kustomization.yaml 이미지 업데이트
       - name: Update Kubernetes resources

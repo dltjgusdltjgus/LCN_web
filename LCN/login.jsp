@@ -25,7 +25,7 @@
 					</div>
 					<div class="card fat">
 						<div class="card-body">
-							<h4 class="card-title">Login Debug</h4>
+							<h4 class="card-title">Login</h4>
 							<%
 								String method = request.getMethod();
 								String email = request.getParameter("email"); // HTML 폼의 'email' 필드

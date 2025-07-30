@@ -63,7 +63,7 @@ jobs:
       - name: Update Kubernetes resources
         run: |
           echo "✅ Updating kustomization.yaml"
-          cd manifests-seoul
+          cd manifests
           kustomize edit clear images
           kustomize edit set image ${{ steps.login-ecr-seoul.outputs.registry }}/${{ steps.image.outputs.ecr_repository }}=${{ steps.login-ecr-seoul.outputs.registry }}/${{ steps.image.outputs.ecr_repository }}:${{ steps.image.outputs.version }}
           cat kustomization.yaml
@@ -71,7 +71,7 @@ jobs:
       #        11. 변경된 파일 커밋 & 푸시 (서울)
       - name: Commit files if changed
         run: |
-          cd manifests-seoul
+          cd manifests
           git config --global user.email "github-actions@github.com"
           git config --global user.name "dltjgusdltjgus"
           if ! git diff --quiet; then

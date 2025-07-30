@@ -54,7 +54,7 @@ jobs:
       - name: Checkout kustomize repository
         uses: actions/checkout@v2
         with:
-          repository: newbie507/AWS_Seoul_manifests
+          repository: dltjgusdltjgus/LCN_manifests
           ref: main
           token: ${{ secrets.ACTION_TOKEN }}
           path: manifests-seoul

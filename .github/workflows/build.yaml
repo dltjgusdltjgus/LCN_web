@@ -33,7 +33,7 @@ jobs:
         run: |
           VERSION=$(echo "${GITHUB_SHA}" | cut -c1-8)-$(date +%s)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "ecr_repository=drplan-ecr-seoul-repo" >> $GITHUB_OUTPUT
+          echo "ecr_repository=kr-ecr" >> $GITHUB_OUTPUT
 
       #        5. JSP 이미지 빌드 & 서울 ECR에 푸시
       - name: Build, tag, and push to Seoul ECR

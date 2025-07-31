@@ -11,11 +11,8 @@ ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH=$CATALINA_HOME/bin:$PATH
 
 # MariaDB JDBC 드라이버 버전 설정 (이전 MYSQL_CONNECTOR_VERSION에서 변경됨)
+# MariaDB Connector/J 최신 안정 버전
 ENV MARIADB_CONNECTOR_VERSION=3.3.3
- # MariaDB Connector/J 최신 안정 버전
-ENV DB_ENDPOINT=lcn-kr-db.c9g48swe6aab.ap-northeast-2.rds.amazonaws.com
-ENV DB_USERNAME=admin
-ENV DB_PASSWORD=powerlcn
 
 # 1. 패키지 설치 및 JDK 설치
 # apt-get update와 install/upgrade를 한 줄에 두어 빌드 캐싱 효율성 높임
@@ -42,31 +39,27 @@ RUN mkdir -p $CATALINA_HOME && \
 # 하지만 Tomcat의 공유 라이브러리 목적으로 유지할 수는 있습니다.)
 RUN wget https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/${MARIADB_CONNECTOR_VERSION}/mariadb-java-client-${MARIADB_CONNECTOR_VERSION}.jar -O ${CATALINA_HOME}/lib/mariadb-java-client-${MARIADB_CONNECTOR_VERSION}.jar
 
-# 패키지 목록 업데이트 및 Python 3 설치
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# --- Spring Boot WAR 파일 복사 (가장 중요!) ---
+# Spring Boot 애플리케이션을 반드시 '.war' 파일로 빌드해야 합니다.
+# (pom.xml에서 <packaging>jar</packaging>를 <packaging>war</packaging>로 변경하고
+# SpringBootServletInitializer를 상속받도록 코드를 수정해야 합니다.)
+# 빌드된 WAR 파일을 Tomcat의 webapps 디렉토리에 복사합니다.
+# 웹 애플리케이션의 루트 컨텍스트로 배포하려면 이름을 ROOT.war로 지정합니다.
+# 'target/' 경로는 Dockerfile이 있는 위치를 기준으로 합니다. WAR 파일 이름을 확인해주세요.
+# COPY target/user-registration-app.war $CATALINA_HOME/webapps/ROOT
 
-# (선택 사항) 'python' 명령어를 'python3'에 링크 (호환성 목적)
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
-
-# 이제 Python을 사용할 수 있습니다.
-WORKDIR /app
-COPY ./*.py /app
-
+# 웹 애플리케이션 복사 (이전 LCN 복사 줄)
+# 이 줄은 일반적으로 WAR 파일 내부에 정적 리소스가 포함되므로 WAR 배포 시에는
+# 중복되거나 충돌할 수 있습니다.
+# 만약 LCN이 WAR에 포함되지 않은 독립적인 정적 파일이고 Tomcat이 이를 별도로 서비스해야 한다면 유지합니다.
+# 이 경우, WAR 파일 압축 해제 후 LCN 파일이 루트 컨텍스트에 추가됩니다.
 COPY ./LCN/ $CATALINA_HOME/webapps/ROOT/
 COPY ./xml/context.xml $CATALINA_HOME/webapps/manager/META-INF/context.xml
+COPY ./xml/web.xml $CATALINA_HOME/webapps/manager/WEB-INF/web.xml
 
 # Tomcat의 기본 HTTP 포트 노출
 EXPOSE 8080
 
 # Tomcat 시작 (포어그라운드)
 # 'exec' 형태를 사용하는 것이 Docker의 시그널 처리에 더 좋습니다.
-# CMD ["/usr/local/tomcat/bin/catalina.sh", "run"]
-
-COPY start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
-
-CMD ["/usr/local/bin/start.sh"]
-
+CMD ["/usr/local/tomcat/bin/catalina.sh", "run"]

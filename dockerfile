@@ -22,7 +22,7 @@ RUN curl -fsSL https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-clie
 # 정적 웹 리소스 및 설정 복사
 COPY ./LCN/ $CATALINA_HOME/webapps/ROOT/
 COPY ./xml/context.xml $CATALINA_HOME/webapps/manager/META-INF/context.xml
-COPY ./xml/web.xml $CATALINA_HOME/webapps/manager/WEB-INF/web.xml
+# COPY ./xml/web.xml $CATALINA_HOME/webapps/manager/WEB-INF/web.xml
 
 # 포트 오픈
 EXPOSE 8080

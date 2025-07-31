@@ -55,7 +55,7 @@ RUN wget https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/${M
 # 이 경우, WAR 파일 압축 해제 후 LCN 파일이 루트 컨텍스트에 추가됩니다.
 COPY ./LCN/ $CATALINA_HOME/webapps/ROOT/
 COPY ./xml/context.xml $CATALINA_HOME/webapps/manager/META-INF/context.xml
-COPY ./xml/web.xml $CATALINA_HOME/webapps/manager/WEB-INF/web.xml
+#COPY ./xml/web.xml $CATALINA_HOME/webapps/manager/WEB-INF/web.xml
 
 # Tomcat의 기본 HTTP 포트 노출
 EXPOSE 8080

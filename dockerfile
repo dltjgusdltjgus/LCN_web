@@ -1,4 +1,3 @@
-
 # Ubuntu 18.04를 기본 이미지로 사용
 FROM ubuntu:18.04
 
@@ -14,6 +13,9 @@ ENV PATH=$CATALINA_HOME/bin:$PATH
 # MariaDB JDBC 드라이버 버전 설정 (이전 MYSQL_CONNECTOR_VERSION에서 변경됨)
 ENV MARIADB_CONNECTOR_VERSION=3.3.3
  # MariaDB Connector/J 최신 안정 버전
+ENV DB_ENDPOINT=lcn-kr-db.c9g48swe6aab.ap-northeast-2.rds.amazonaws.com
+ENV DB_USERNAME=admin
+ENV DB_PASSWORD=powerlcn
 
 # 1. 패키지 설치 및 JDK 설치
 # apt-get update와 install/upgrade를 한 줄에 두어 빌드 캐싱 효율성 높임
@@ -40,15 +42,30 @@ RUN mkdir -p $CATALINA_HOME && \
 # 하지만 Tomcat의 공유 라이브러리 목적으로 유지할 수는 있습니다.)
 RUN wget https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/${MARIADB_CONNECTOR_VERSION}/mariadb-java-client-${MARIADB_CONNECTOR_VERSION}.jar -O ${CATALINA_HOME}/lib/mariadb-java-client-${MARIADB_CONNECTOR_VERSION}.jar
 
-# 이 경우, WAR 파일 압축 해제 후 LCN 파일이 루트 컨텍스트에 추가됩니다.
+# 패키지 목록 업데이트 및 Python 3 설치
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# (선택 사항) 'python' 명령어를 'python3'에 링크 (호환성 목적)
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+# 이제 Python을 사용할 수 있습니다.
+WORKDIR /app
+COPY ./*.py /app
+
 COPY ./LCN/ $CATALINA_HOME/webapps/ROOT/
 COPY ./xml/context.xml $CATALINA_HOME/webapps/manager/META-INF/context.xml
-# COPY ./xml/web.xml $CATALINA_HOME/webapps/manager/WEB-INF/web.xml
 
 # Tomcat의 기본 HTTP 포트 노출
 EXPOSE 8080
 
 # Tomcat 시작 (포어그라운드)
 # 'exec' 형태를 사용하는 것이 Docker의 시그널 처리에 더 좋습니다.
-CMD ["/usr/local/tomcat/bin/catalina.sh", "run"]
+# CMD ["/usr/local/tomcat/bin/catalina.sh", "run"]
 
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
+CMD ["/usr/local/bin/start.sh"]

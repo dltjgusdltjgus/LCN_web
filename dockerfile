@@ -54,7 +54,6 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 # 이제 Python을 사용할 수 있습니다.
 WORKDIR /app
 COPY ./*.py /app
-
 COPY ./LCN/ $CATALINA_HOME/webapps/ROOT/
 COPY ./xml/context.xml $CATALINA_HOME/webapps/manager/META-INF/context.xml
 

@@ -128,7 +128,7 @@ jobs:
           echo "✅  Updating kustomization.yaml"
           cd LCN_JP_manifests
           kustomize edit clear images
-          kustomize edit set image ${{ steps.login-ecr-Japan.outputs.registry }}/LCN-ecr-Japan-repo=${{ steps.login-ecr-Japan.outputs.registry }}/LCN-ecr-Japan-repo:${{ steps.image.outputs.version }}
+          kustomize edit set image ${{ steps.login-ecr-Japan.outputs.registry }}/jp-ecr=${{ steps.login-ecr-Japan.outputs.registry }}/jp-ecr:${{ steps.image.outputs.version }}
           cat kustomization.yaml
 
       #        14. 변경된 파일 커밋 & 푸시 (일본)
